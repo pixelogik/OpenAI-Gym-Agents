@@ -8,16 +8,6 @@ from gym.envs.registration import register
 
 #######################################################################################################################
 
-register(
-    id='FrozenLakeNotSlippery-v0',
-    entry_point='gym.envs.toy_text:FrozenLakeEnv',
-    kwargs={'map_name': '8x8', 'is_slippery': True},
-    max_episode_steps=100,
-    reward_threshold=0.78,  # optimum = .8196
-)
-
-#######################################################################################################################
-
 class QLearningAgent(object):
 
     """ 
@@ -39,8 +29,8 @@ class QLearningAgent(object):
         # We do epsilon greedy exploration. In the beginning the agent will act more 
         # randomly in order to explore the state / action space. Later on it will act 
         # more accordingly to the value function for (state,action) pairs
-        self.epsilon = 0.9
-        self.epsilon_decay = 0.99
+        self.epsilon = 0.7
+        self.epsilon_decay = 0.995
 
         # For analytics purposes we store the final reward for each episode in here
         self.final_rewards = []
@@ -70,7 +60,7 @@ class QLearningAgent(object):
 
     def evaluate_episode(self):
         final_reward = self.current_episode[-1]['reward']
-        print('Final reward: ' + str(final_reward))
+        #print('Final reward: ' + str(final_reward))
         self.final_rewards.append(final_reward)
 
     def start_episode(self):
@@ -86,7 +76,7 @@ class QLearningAgent(object):
         # print(self.current_episode)
 
         final_reward = self.current_episode[-1]['reward']
-        print('Final reward: ' + str(final_reward))
+        #print('Final reward: ' + str(final_reward))
 
         self.final_rewards.append(final_reward)
 
@@ -135,7 +125,7 @@ class QLearningAgent(object):
 
         # Do random action if greedy exploration parameter is higher then random number
         if np.random.rand() < self.epsilon:
-            print('Doing random action because greedy!')
+            #print('Doing random action because greedy!')
             random_action = self.action_space.sample()
 
             # Remember state and action for when reward is coming in and
@@ -174,7 +164,7 @@ class QLearningAgent(object):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=None)
-    parser.add_argument('env_id', nargs='?', default='FrozenLakeNotSlippery-v0', help='Select the environment to run')
+    parser.add_argument('env_id', nargs='?', default='FrozenLake8x8-v0', help='Select the environment to run')
     args = parser.parse_args()
 
     # You can set the level to logger.DEBUG or logger.WARN if you
@@ -192,7 +182,7 @@ if __name__ == '__main__':
     env.seed(0)
     agent = QLearningAgent(env.action_space, env.observation_space)
     
-    episode_count = 2000
+    episode_count = 10000
     last_reward = 0
     action = 0
     done = False
@@ -201,7 +191,7 @@ if __name__ == '__main__':
         # print("#########################################")
         current_observation = env.reset()
 
-        print('BEGIN ---------------')
+        #print('BEGIN ---------------')
         agent.start_episode()
 
         steps = 0
@@ -213,14 +203,14 @@ if __name__ == '__main__':
             steps = steps + 1
 
             if done:
-                env.render()
+                #env.render()
                 agent.finalize_episode(current_observation, last_reward)
-                print('Used steps = '+str(steps))
+                #print('Used steps = '+str(steps))
                 break
 
         agent.learn_from_episode()
 
-        print('END ---------------')
+        #print('END ---------------')
 
     # Prepare agent for evaluation
     agent.reset_evaluation()
@@ -235,16 +225,16 @@ if __name__ == '__main__':
             steps = steps + 1
 
             if done:
-                env.render()
+                #env.render()
                 agent.finalize_episode(current_observation, last_reward)
                 agent.evaluate_episode()
-                print('Used steps = '+str(steps))
+                #print('Used steps = '+str(steps))
                 break
 
-        print('END ---------------')
+        #print('END ---------------')
 
     last_100_rewards = agent.final_rewards
-    print(last_100_rewards)
+    #print(last_100_rewards)
     print('SUCCESS RATE = '+str(100.0*np.sum(last_100_rewards) / len(last_100_rewards))+'%')
 
     # Close the env and write monitor result info to disk
