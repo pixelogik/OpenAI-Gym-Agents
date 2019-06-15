@@ -11,7 +11,7 @@ from gym.envs.registration import register
 register(
     id='FrozenLakeNotSlippery-v0',
     entry_point='gym.envs.toy_text:FrozenLakeEnv',
-    kwargs={'map_name': '4x4', 'is_slippery': True},
+    kwargs={'map_name': '8x8', 'is_slippery': True},
     max_episode_steps=100,
     reward_threshold=0.78,  # optimum = .8196
 )
@@ -173,8 +173,11 @@ class QLearningAgent(object):
         self.A = action_space.n
         self.S = observation_space.n
 
-        # Learning parameters
+        # A good learning rate
         self.learning_rate = 0.1
+
+        # Discount factor to the max because we only get a 1.0 reward at the end of the 
+        # episode so we want to push it as far back as possible
         self.discount_factor = 1.0
 
         # We do epsilon greedy exploration. In the beginning the agent will act more 
