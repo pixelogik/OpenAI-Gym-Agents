@@ -11,8 +11,8 @@ from gym.envs.registration import register
 register(
     id='FrozenLakeNotSlippery-v0',
     entry_point='gym.envs.toy_text:FrozenLakeEnv',
-    kwargs={'map_name': '8x8', 'is_slippery': False},
-    max_episode_steps=100,
+    kwargs={'map_name': '4x4', 'is_slippery': True},
+    max_episode_steps=50,
     reward_threshold=0.78,  # optimum = .8196
 )
 
@@ -163,7 +163,7 @@ if __name__ == '__main__':
     env = wrappers.Monitor(env, directory=outdir, force=True)
     env.seed(0)
     agent = ValueIterationAgent(env.action_space, env.observation_space)
-
+    
     episode_count = 4000
     last_reward = 0
     action = 0
